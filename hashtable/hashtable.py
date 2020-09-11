@@ -2,6 +2,7 @@ class HashTableEntry:
     """
     Linked List hash table key/value pair
     """
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -10,6 +11,18 @@ class HashTableEntry:
 
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
+
+
+def djb2(key):
+    """
+    DJB2 hash, 32-bit
+
+    Implement this, and/or FNV-1.
+    """
+    hash = 5381
+    for c in key:
+        hash = (hash * 33) + ord(c)
+    return hash & 0xFFFFFFFF
 
 
 class HashTable:
@@ -21,8 +34,12 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
-
+        if capacity < MIN_CAPACITY:
+            self.capacity = MIN_CAPACITY
+        else:
+            self.capacity = capacity
+        self.bucket = [None] * capacity
+        self.count = 0
 
     def get_num_slots(self):
         """
@@ -34,8 +51,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        return len(self.bucket)
 
     def get_load_factor(self):
         """
@@ -43,8 +59,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        return self.count / self.capacity
 
     def fnv1(self, key):
         """
@@ -55,23 +70,13 @@ class HashTable:
 
         # Your code here
 
-
-    def djb2(self, key):
-        """
-        DJB2 hash, 32-bit
-
-        Implement this, and/or FNV-1.
-        """
-        # Your code here
-
-
     def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        # return self.fnv1(key) % self.capacity
+        return djb2(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -81,8 +86,21 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        bucket_index = self.hash_index(key)
+        if self.bucket[bucket_index] is not None:
+            cur_node = self.bucket[bucket_index]
+            while cur_node is not None:
+                if cur_node.key == key:
+                    cur_node.value = value
+                    break
+                cur_node = cur_node.next
+            cur_bucket = self.bucket[bucket_index]
+            self.bucket[bucket_index] = HashTableEntry(key, value)
+            self.bucket[bucket_index].next = cur_bucket
+            self.count += 1
+        else:
+            self.bucket[bucket_index] = HashTableEntry(key, value)
+            self.count += 1
 
     def delete(self, key):
         """
@@ -92,8 +110,27 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        bucket_index = self.hash_index(key)
+        cur_node = self.bucket[bucket_index]
+        if cur_node is None:
+            return
+        else:
+            if cur_node.key == key:
+                self.bucket[bucket_index] = cur_node.next
+                self.count -= 1
+                return cur_node.value
+            else:
+                prev_node = cur_node
+                cur_node = cur_node.next
+                while cur_node is not None:
+                    if cur_node.key == key:
+                        prev_node.next = cur_node.next
+                        self.count -= 1
+                        return cur_node.value
+                    else:
+                        prev_node = cur_node
+                        cur_node = cur_node.next
+                return
 
     def get(self, key):
         """
@@ -103,8 +140,13 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        bucket_index = self.hash_index(key)
+        cur_node = self.bucket[bucket_index]
+        while cur_node is not None:
+            if cur_node.key == key:
+                return cur_node.value
+            cur_node = cur_node.next
+        return None
 
     def resize(self, new_capacity):
         """
@@ -113,8 +155,15 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        new_bucket = self.bucket
+        self.bucket = new_capacity
+        self.bucket = [None] * self.bucket
+        self.count = 0
+        for bucket in new_bucket:
+            cur_node = bucket
+            while cur_node is not None:
+                self.put(cur_node.key, cur_node.value)
+                cur_node = cur_node.next
 
 
 if __name__ == "__main__":
