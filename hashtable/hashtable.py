@@ -163,7 +163,15 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        new_table = self.table
+        self.table = new_capacity
+        self.table = [None] * self.table
+        self.count = 0
+        for table in new_table:
+            cur_entry = table
+            while cur_entry is not None:
+                self.put(cur_entry.key, cur_entry.value)
+                cur_entry = cur_entry.next
 
 
 if __name__ == "__main__":
