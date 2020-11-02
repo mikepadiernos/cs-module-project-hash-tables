@@ -99,10 +99,11 @@ class HashTable:
 
         Implement this.
         """
-        value = self.table[self.hash_index(key)]
-        if value is None:
-            print(f"No key found!")
-        self.table[self.hash_index(key)] = None
+        # value = self.table[self.hash_index(key)]
+        # if value is None:
+        #     print(f"No key found!")
+        # self.table[self.hash_index(key)] = None
+        cur_entry = self.table[self.hash_index(key)]
 
     def get(self, key):
         """
@@ -112,7 +113,12 @@ class HashTable:
 
         Implement this.
         """
-        return self.table[self.hash_index(key)]
+        cur_entry = self.table[self.hash_index(key)]
+        while cur_entry is not None:
+            if cur_entry.key == key:
+                return cur_entry.value
+            cur_entry = cur_entry.next
+        return None
 
     def resize(self, new_capacity):
         """
