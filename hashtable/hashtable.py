@@ -27,6 +27,7 @@ class HashTable:
             self.capacity = MIN_CAPACITY
         else:
             self.capacity = capacity
+        self.count = 0
 
     def get_num_slots(self):
         """
@@ -46,7 +47,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.count / self.capacity
 
     def fnv1(self, key):
         """
