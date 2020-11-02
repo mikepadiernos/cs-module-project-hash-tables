@@ -89,7 +89,22 @@ class HashTable:
 
         Implement this.
         """
-        self.table[self.hash_index(key)] = value
+        table_index = self.hash_index(key)
+        cur_entry = self.table[table_index]
+        if cur_entry is not None:
+            cur_entry = self.table[table_index]
+            while cur_entry is not None:
+                if cur_entry == key:
+                    cur_entry.value = value
+                    break
+                cur_entry = cur_entry.next
+            cur_table = self.table[self.hash_index(key)]
+            self.table[table_index] = HashTableEntry(key, value)
+            self.table[table_index].next = cur_table
+            self.count += 1
+        else:
+            self.table[table_index] = HashTableEntry(key, value)
+            self.count += 1
 
     def delete(self, key):
         """
@@ -103,7 +118,27 @@ class HashTable:
         # if value is None:
         #     print(f"No key found!")
         # self.table[self.hash_index(key)] = None
-        cur_entry = self.table[self.hash_index(key)]
+        table_index = self.hash_index(key)
+        cur_entry = self.table[table_index]
+        if cur_entry.key == key:
+            cur_entry = cur_entry.next
+            cur_entry.next = None
+            self.count -= 1
+            return cur_entry.value
+
+        prev_entry = None
+
+        while cur_entry is not None:
+            if cur_entry.key == key:
+                prev_entry.next = cur_entry.next
+                cur_entry.next = None
+                self.count -= 1
+                return cur_entry.value
+            else:
+                prev_entry = cur_entry
+                cur_entry = cur_entry.next
+
+        return None
 
     def get(self, key):
         """
@@ -113,7 +148,8 @@ class HashTable:
 
         Implement this.
         """
-        cur_entry = self.table[self.hash_index(key)]
+        table_index = self.hash_index(key)
+        cur_entry = self.table[table_index]
         while cur_entry is not None:
             if cur_entry.key == key:
                 return cur_entry.value
