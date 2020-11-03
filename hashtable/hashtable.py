@@ -121,7 +121,7 @@ class HashTable:
         table_index = self.hash_index(key)
         cur_entry = self.table[table_index]
         if cur_entry.key == key:
-            cur_entry = cur_entry.next
+            self.table[table_index] = cur_entry.next
             cur_entry.next = None
             self.count -= 1
             return cur_entry.value
