@@ -164,8 +164,7 @@ class HashTable:
         Implement this.
         """
         new_table = self.table
-        self.table = new_capacity
-        self.table = [None] * self.table
+        self.table = [None] * int(new_capacity)
         self.count = 0
         for table in new_table:
             cur_entry = table
