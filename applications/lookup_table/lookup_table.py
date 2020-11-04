@@ -11,6 +11,11 @@ def slowfun_too_slow(x, y):
     return v
 
 
+"""
+PLAN:
+Use a dictionary to cache slowfun_too_slow method
+"""
+
 cache = {}
 
 
