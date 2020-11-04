@@ -1,6 +1,18 @@
-def word_count(s):
-    # Your code here
 
+
+def word_count(s):
+    filtered = '" : ; , . - + = / \ | [ ] { } ( ) * ^ &'
+    string = s.split()
+    cache = {}
+    for word in string:
+        word = word.strip(filtered).lower()
+        if not word:
+            break
+        if word in cache:
+            cache[word] += 1
+        else:
+            cache[word] = 1
+    return cache
 
 
 if __name__ == "__main__":
