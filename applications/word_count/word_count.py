@@ -4,14 +4,14 @@ def word_count(s):
     filtered = '" : ; , . - + = / \ | [ ] { } ( ) * ^ &'
     string = s.split()
     cache = {}
-    for word in string:
-        word = word.strip(filtered).lower()
-        if not word:
+    for item in string:
+        item = item.strip(filtered).lower()
+        if not item:
             break
-        if word in cache:
-            cache[word] += 1
+        if item in cache:
+            cache[item] += 1
         else:
-            cache[word] = 1
+            cache[item] = 1
     return cache
 
 
