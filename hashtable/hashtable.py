@@ -2,6 +2,7 @@ class HashTableEntry:
     """
     Linked List hash table key/value pair
     """
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -21,8 +22,12 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
-
+        self.table = [None] * capacity
+        if capacity < MIN_CAPACITY:
+            self.capacity = MIN_CAPACITY
+        else:
+            self.capacity = capacity
+        self.count = 0
 
     def get_num_slots(self):
         """
@@ -34,8 +39,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        return len(self.table)
 
     def get_load_factor(self):
         """
@@ -43,8 +47,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        return self.count / self.capacity
 
     def fnv1(self, key):
         """
@@ -55,22 +58,27 @@ class HashTable:
 
         # Your code here
 
-
     def djb2(self, key):
         """
         DJB2 hash, 32-bit
 
         Implement this, and/or FNV-1.
         """
-        # Your code here
-
+        hash = 5381
+        for x in key:
+            # ord(x) simply returns the unicode rep of the
+            # character x
+            hash = ((hash << 5) + hash) + ord(x)
+        # Note to clamp the value so that the hash is
+        # related to the power of 2
+        return hash & 0xFFFFFFFF
 
     def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
+        # return self.fnv1(key) % self.capacity
         return self.djb2(key) % self.capacity
 
     def put(self, key, value):
@@ -81,8 +89,22 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        table_index = self.hash_index(key)
+        cur_entry = self.table[table_index]
+        if cur_entry is not None:
+            cur_entry = self.table[table_index]
+            while cur_entry is not None:
+                if cur_entry == key:
+                    cur_entry.value = value
+                    break
+                cur_entry = cur_entry.next
+            cur_table = self.table[self.hash_index(key)]
+            self.table[table_index] = HashTableEntry(key, value)
+            self.table[table_index].next = cur_table
+            self.count += 1
+        else:
+            self.table[table_index] = HashTableEntry(key, value)
+            self.count += 1
 
     def delete(self, key):
         """
@@ -92,8 +114,31 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        # value = self.table[self.hash_index(key)]
+        # if value is None:
+        #     print(f"No key found!")
+        # self.table[self.hash_index(key)] = None
+        table_index = self.hash_index(key)
+        cur_entry = self.table[table_index]
+        if cur_entry.key == key:
+            self.table[table_index] = cur_entry.next
+            cur_entry.next = None
+            self.count -= 1
+            return cur_entry.value
 
+        prev_entry = None
+
+        while cur_entry is not None:
+            if cur_entry.key == key:
+                prev_entry.next = cur_entry.next
+                cur_entry.next = None
+                self.count -= 1
+                return cur_entry.value
+            else:
+                prev_entry = cur_entry
+                cur_entry = cur_entry.next
+
+        return None
 
     def get(self, key):
         """
@@ -103,8 +148,13 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        table_index = self.hash_index(key)
+        cur_entry = self.table[table_index]
+        while cur_entry is not None:
+            if cur_entry.key == key:
+                return cur_entry.value
+            cur_entry = cur_entry.next
+        return None
 
     def resize(self, new_capacity):
         """
@@ -113,8 +163,14 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        new_table = self.table
+        self.table = [None] * int(new_capacity)
+        self.count = 0
+        for table in new_table:
+            cur_entry = table
+            while cur_entry is not None:
+                self.put(cur_entry.key, cur_entry.value)
+                cur_entry = cur_entry.next
 
 
 if __name__ == "__main__":

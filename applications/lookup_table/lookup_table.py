@@ -1,4 +1,5 @@
-# Your code here
+import math
+import random
 
 
 def slowfun_too_slow(x, y):
@@ -9,13 +10,24 @@ def slowfun_too_slow(x, y):
 
     return v
 
+
+"""
+PLAN:
+Use a dictionary to cache slowfun_too_slow method
+"""
+
+cache = {}
+
+
 def slowfun(x, y):
     """
     Rewrite slowfun_too_slow() in here so that the program produces the same
     output, but completes quickly instead of taking ages to run.
     """
-    # Your code here
-
+    if (x, y) not in cache:
+        v = slowfun_too_slow(x, y)
+        cache[(x, y)] = v
+    return cache[(x, y)]
 
 
 # Do not modify below this line!
